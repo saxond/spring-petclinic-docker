@@ -5,8 +5,10 @@ COPY mvnw pom.xml ./
 RUN ./mvnw dependency:resolve
 COPY src ./src
 
+RUN wget https://repo1.maven.org/maven2/com/newrelic/agent/java/newrelic-agent/7.11.1/newrelic-agent-7.11.1.jar -O /opt/newrelic.jar
+
 FROM base as development
-CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=mysql", "-Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000'"]
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.profiles=mysql", "-Dspring-boot.run.jvmArguments='-javaagent:/opt/newrelic.jar'"]
 
 FROM base as build
 RUN ./mvnw package
